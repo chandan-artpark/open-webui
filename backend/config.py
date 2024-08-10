@@ -1423,3 +1423,9 @@ DATABASE_URL = os.environ.get("DATABASE_URL", f"sqlite:///{DATA_DIR}/webui.db")
 # Replace the postgres:// with postgresql://
 if "postgres://" in DATABASE_URL:
     DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://")
+
+
+####################################
+# Agent Router
+####################################
+AGENT_API_BASE_URL = r"http://host.docker.internal:5500/agent_router"
