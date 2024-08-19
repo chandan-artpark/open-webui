@@ -120,6 +120,7 @@ from config import (
     AppConfig,
 )
 
+# agent API endpoint
 from config import AGENT_API_BASE_URL
 
 from constants import ERROR_MESSAGES, WEBHOOK_MESSAGES, TASKS
@@ -846,8 +847,10 @@ class PipelineMiddleware(BaseHTTPMiddleware):
                 )
 
             modified_body_bytes = json.dumps(data).encode("utf-8")
-
+            
             # passing the modified_body_types to our agent endpoint
+            # agent_router/messages
+
             try:
                 response = requests.post(f"{AGENT_API_BASE_URL}/messages", json={
                     "modified_body": data,
