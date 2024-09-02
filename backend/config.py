@@ -1514,4 +1514,5 @@ AUDIO_TTS_SPLIT_ON = PersistentConfig(
 ####################################
 # Agent Router
 ####################################
-AGENT_API_BASE_URL = r"http://localhost:5600/agent_router"
+AGENT_API_BASE_URL = r"http://host.docker.internal:5600/agent_router"
+# http://localhost:5600/agent_router
