@@ -1428,4 +1428,5 @@ if "postgres://" in DATABASE_URL:
 ####################################
 # Agent Router
 ####################################
-AGENT_API_BASE_URL = r"http://host.docker.internal:5500/agent_router"
+# host.docker.internal when using docker and localhost if hosted in a local env
+AGENT_API_BASE_URL = r"http://localhost:5500/agent_router"

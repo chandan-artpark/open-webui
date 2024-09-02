@@ -131,8 +131,8 @@ async def tag_doc_by_name(form_data: TagDocumentForm, user=Depends(get_verified_
     # seding details to custom agent_router/doc_changes/tag
     try:
         send_agent_api_request(data=form_data.model_dump(),
-                            status='tag',
-                            base_url= f"{AGENT_API_BASE_URL}/doc_changes")
+                                status='tag',
+                                base_url= f"{AGENT_API_BASE_URL}/doc_changes")
     except Exception as e:
         print(e)
     
@@ -198,7 +198,7 @@ async def delete_doc_by_name(name: str, user=Depends(get_admin_user)):
     # seding details to custom agent_router/doc_changes/create
     try:
         send_agent_api_request(data={'name':name},
-                            status='delete',
+                                status='delete',
                             base_url= f"{AGENT_API_BASE_URL}/doc_changes")
     except Exception as e:
         print(e)
