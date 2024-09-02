@@ -1510,3 +1510,8 @@ AUDIO_TTS_SPLIT_ON = PersistentConfig(
     "audio.tts.split_on",
     os.getenv("AUDIO_TTS_SPLIT_ON", "punctuation"),
 )
+
+####################################
+# Agent Router
+####################################
+AGENT_API_BASE_URL = r"http://localhost:5600/agent_router"

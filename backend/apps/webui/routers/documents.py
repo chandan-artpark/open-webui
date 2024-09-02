@@ -1,10 +1,11 @@
 from fastapi import Depends, FastAPI, HTTPException, status
 from datetime import datetime, timedelta
-from typing import Union, Optional
+from typing import List, Union, Optional
 
 from fastapi import APIRouter
 from pydantic import BaseModel
 import json
+import requests
 
 from apps.webui.models.documents import (
     Documents,
@@ -17,7 +18,20 @@ from apps.webui.models.documents import (
 from utils.utils import get_verified_user, get_admin_user
 from constants import ERROR_MESSAGES
 
+# custom endpoint
+from config import AGENT_API_BASE_URL
+
 router = APIRouter()
+
+
+def send_agent_api_request(data, status, base_url):
+    response = requests.post(f"{base_url}/{status}", json={
+        "data": data,
+        "status": status
+    })
+    response.raise_for_status()
+    return 
+
 
 ############################
 # GetDocuments
@@ -45,8 +59,14 @@ async def get_documents(user=Depends(get_verified_user)):
 
 @router.post("/create", response_model=Optional[DocumentResponse])
 async def create_new_doc(form_data: DocumentForm, user=Depends(get_admin_user)):
+
+    # seding details to custom agent_router/doc_changes/create
+    send_agent_api_request(data=form_data.model_dump(),
+                        status='create',
+                        base_url= f"{AGENT_API_BASE_URL}/doc_changes")
+
     doc = Documents.get_doc_by_name(form_data.name)
-    if doc is None:
+    if doc == None:
         doc = Documents.insert_new_doc(user.id, form_data)
 
         if doc:
@@ -107,6 +127,15 @@ class TagDocumentForm(BaseModel):
 
 @router.post("/doc/tags", response_model=Optional[DocumentResponse])
 async def tag_doc_by_name(form_data: TagDocumentForm, user=Depends(get_verified_user)):
+
+    # seding details to custom agent_router/doc_changes/tag
+    try:
+        send_agent_api_request(data=form_data.model_dump(),
+                                status='tag',
+                                base_url= f"{AGENT_API_BASE_URL}/doc_changes")
+    except Exception as e:
+        print(e)
+    
     doc = Documents.update_doc_content_by_name(form_data.name, {"tags": form_data.tags})
 
     if doc:
@@ -134,6 +163,15 @@ async def update_doc_by_name(
     form_data: DocumentUpdateForm,
     user=Depends(get_admin_user),
 ):
+    
+    # seding details to custom agent_router/doc_changes/create
+    try:
+        send_agent_api_request(data=name,
+                            status='update',
+                            base_url= f"{AGENT_API_BASE_URL}/doc_changes")
+    except Exception as e:
+        print(e)
+
     doc = Documents.update_doc_by_name(name, form_data)
     if doc:
         return DocumentResponse(
@@ -156,5 +194,15 @@ async def update_doc_by_name(
 
 @router.delete("/doc/delete", response_model=bool)
 async def delete_doc_by_name(name: str, user=Depends(get_admin_user)):
+
+    # seding details to custom agent_router/doc_changes/create
+    try:
+        send_agent_api_request(data={'name':name},
+                                status='delete',
+                            base_url= f"{AGENT_API_BASE_URL}/doc_changes")
+    except Exception as e:
+        print(e)
+    
+    print("Deleted doc: ",name)
     result = Documents.delete_doc_by_name(name)
     return result

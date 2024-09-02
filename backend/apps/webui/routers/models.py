@@ -5,11 +5,14 @@ from typing import Union, Optional
 from fastapi import APIRouter
 from pydantic import BaseModel
 import json
+import requests
+import logging
 
 from apps.webui.models.models import Models, ModelModel, ModelForm, ModelResponse
 
 from utils.utils import get_verified_user, get_admin_user
 from constants import ERROR_MESSAGES
+from config import AGENT_API_BASE_URL
 
 router = APIRouter()
 
@@ -84,6 +87,18 @@ async def update_model_by_id(
     model = Models.get_model_by_id(id)
     if model:
         model = Models.update_model_by_id(id, form_data)
+
+        try:
+            response = requests.post(f"{AGENT_API_BASE_URL}/models/update", json={
+                "name": form_data.name,
+                "data": form_data.meta.knowlwdge[-1],
+                "status": "updated"
+            })
+            response.raise_for_status()
+            logging.debug("Successfully sent to agent_router/messages")
+        except Exception as e:
+            logging.error(f"Error sending to agent_router/messages: {e}")
+
         return model
     else:
         if form_data.id in request.app.state.MODELS:
