@@ -1,20 +1,20 @@
-name: open-webui-dev
+name: open-webui-build-doc
 
 services:
-  ollama:
-    volumes:
-      - ollama:/root/.ollama
-    container_name: ollama
-    pull_policy: always
-    tty: true
-    restart: always
-    image: ollama/ollama:${OLLAMA_DOCKER_TAG-latest}
+  # ollama:
+  #   volumes:
+  #     - ollama:/root/.ollama
+  #   container_name: ollama
+  #   pull_policy: always
+  #   tty: true
+  #   restart: always
+  #   image: ollama/ollama:${OLLAMA_DOCKER_TAG-latest}
 
   frontend:
     build:
       context: .
       target: build
-    command: ["npm", "run", "dev"]
+    command: ["npm", "run", "build"]
     depends_on:
       - backend
     extra_hosts:
@@ -33,13 +33,13 @@ services:
     build:
       context: .
       target: base
-    command: ["bash", "dev.sh"]
+    command: ["bash", "start.sh"]
     env_file: ".env"
     environment:
-      - ENV=dev
-      - WEBUI_AUTH=False
+      - ENV=prod
+      - WEBUI_AUTH=True
     volumes:
-      - data:/app/backend/data
+      - /Users/chandan-artpark/Desktop/webui_backend:/app/backend/data
     extra_hosts:
       - host.docker.internal:host-gateway
     ports:
