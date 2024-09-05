@@ -1,15 +1,6 @@
-name: open-webui-build-doc
+name: open-webui-build
 
 services:
-  # ollama:
-  #   volumes:
-  #     - ollama:/root/.ollama
-  #   container_name: ollama
-  #   pull_policy: always
-  #   tty: true
-  #   restart: always
-  #   image: ollama/ollama:${OLLAMA_DOCKER_TAG-latest}
-
   frontend:
     build:
       context: .
@@ -28,7 +19,7 @@ services:
           target: /app/src
         - action: rebuild
           path: package.json
-
+  
   backend:
     build:
       context: .
@@ -38,8 +29,9 @@ services:
     environment:
       - ENV=prod
       - WEBUI_AUTH=True
+      - ENABLE_OLLAMA_API=false
     volumes:
-      - /Users/chandan-artpark/Desktop/webui_backend:/app/backend/data
+      - /Users/chandan-artpark/Desktop/webui_backend/app/backend/data:/app/backend/data
     extra_hosts:
       - host.docker.internal:host-gateway
     ports:
@@ -54,7 +46,13 @@ services:
             - backend/data
         - action: rebuild
           path: backend/requirements.txt
-
+    networks:
+      - app-network
+  
 volumes:
   data: {}
-  ollama: {}
+
+networks:
+  app-network:
+    external: true
+    driver: bridge
