@@ -1,5 +1,3 @@
-name: open-webui-build
-
 services:
   frontend:
     build:
@@ -19,7 +17,7 @@ services:
           target: /app/src
         - action: rebuild
           path: package.json
-  
+
   backend:
     build:
       context: .
@@ -31,11 +29,11 @@ services:
       - WEBUI_AUTH=True
       - ENABLE_OLLAMA_API=false
     volumes:
-      - /Users/chandan-artpark/Desktop/webui_backend/app/backend/data:/app/backend/data
+      - open-webui:/app/backend/data
     extra_hosts:
       - host.docker.internal:host-gateway
     ports:
-      - "8080:8080"
+      - '8080:8080'
     restart: always
     develop:
       watch:
@@ -48,9 +46,9 @@ services:
           path: backend/requirements.txt
     networks:
       - app-network
-  
+
 volumes:
-  data: {}
+  open-webui:
 
 networks:
   app-network:
